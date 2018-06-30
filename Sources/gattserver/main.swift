@@ -15,6 +15,8 @@ import GATT
 import BluetoothLinux
 #endif
 
+var serviceController: GATTServiceController?
+
 func run(arguments: [String] = CommandLine.arguments) throws {
     
     //  first argument is always the current directory
@@ -50,7 +52,7 @@ func run(arguments: [String] = CommandLine.arguments) throws {
         let controllerType = serviceControllers.first(where: { $0.service == service })
         else { throw CommandError.invalidCommandType(serviceUUIDString) }
     
-    let _ = try controllerType.init(peripheral: peripheral)
+    serviceController = try controllerType.init(peripheral: peripheral)
     
     try peripheral.start()
     
