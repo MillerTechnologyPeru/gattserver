@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreFoundation
 import Bluetooth
 import GATT
 
@@ -20,13 +21,22 @@ func run(arguments: [String] = CommandLine.arguments) throws {
     let arguments = Array(arguments.dropFirst())
     
     #if os(Linux)
-    guard let controller = HostController
+    guard let controller = HostController.default
         else { throw CommandError.bluetoothUnavailible }
         
     print("Bluetooth Controller: \(controller.address)")
+    
+    //let beacon = AppleBeacon(uuid: UUID(), major: 0, minor: 0, rssi: -29)
+        
+    //let flags = GAPFlags(flags: [.lowEnergyGeneralDiscoverableMode])
+        
+    //try controller.iBeacon(beacon, flags: flags)
+        
+    let peripheral = PeripheralManager(controller: controller)
+    #else
+    let peripheral = PeripheralManager()
     #endif
     
-    let peripheral = PeripheralManager()
     peripheral.log = { print("PeripheralManager:", $0) }
     
     #if os(macOS)
@@ -40,7 +50,7 @@ func run(arguments: [String] = CommandLine.arguments) throws {
         let controllerType = serviceControllers.first(where: { $0.service == service })
         else { throw CommandError.invalidCommandType(serviceUUIDString) }
     
-    let controller = try controllerType.init(peripheral: peripheral)
+    let _ = try controllerType.init(peripheral: peripheral)
     
     try peripheral.start()
     

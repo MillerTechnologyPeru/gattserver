@@ -71,11 +71,13 @@ public final class GATTBatteryServiceController: GATTServiceController {
                                repeats: true,
                                block: { [unowned self] _ in self.updateBatteryLevel() })
         } else {
+            #if os(macOS)
             self.timer = Timer(timeInterval: 1.0,
                                target: self,
                                selector: #selector(updateBatteryLevelSelector),
                                userInfo: nil,
                                repeats: true)
+            #endif
         }
         
         RunLoop.main.add(timer, forMode: .commonModes)
