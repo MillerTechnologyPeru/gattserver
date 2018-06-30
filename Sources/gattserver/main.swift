@@ -33,11 +33,16 @@ func run(arguments: [String] = CommandLine.arguments) throws {
     while peripheral.state != .poweredOn { sleep(1) }
     #endif
     
-    let controller = try GATTBatteryServiceController(peripheral: peripheral)
+    guard let serviceUUIDString = arguments.first
+        else { throw CommandError.noCommand }
     
-    //let command = try Command(arguments: arguments)
+    guard let service = BluetoothUUID(rawValue: serviceUUIDString),
+        let controllerType = serviceControllers.first(where: { $0.service == service })
+        else { throw CommandError.invalidCommandType(serviceUUIDString) }
     
-    //try command.execute(controller: controller)
+    let controller = try controllerType.init(peripheral: peripheral)
+    
+    try peripheral.start()
     
     while true {
         #if os(Linux)

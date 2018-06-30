@@ -10,7 +10,7 @@ import Foundation
 import Bluetooth
 import GATT
 
-public final class GATTBatteryServiceController {
+public final class GATTBatteryServiceController: GATTServiceController {
     
     public static let service: BluetoothUUID = .batteryService
     
@@ -35,7 +35,11 @@ public final class GATTBatteryServiceController {
         
         self.peripheral = peripheral
         
-        let serviceUUID = BluetoothUUID() //type(of: self).service
+        #if os(macOS)
+        let serviceUUID = BluetoothUUID()
+        #else
+        let serviceUUID = type(of: self).service
+        #endif
         
         #if os(Linux)
         let descriptors = [GATTClientCharacteristicConfiguration().descriptor]
@@ -108,8 +112,8 @@ public final class GATTBatteryServiceController {
         }
         
         // only change if value changed
-        //guard batteryLevel.level != level
-        //    else { return }
+        guard batteryLevel.level != level
+            else { return }
         
         // will write to GATT DB
         self.batteryLevel = GATTBatteryLevel(level: level)
