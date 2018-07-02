@@ -18,10 +18,12 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
     public let peripheral: PeripheralManager
     
     public private(set) var modelNumber: GATTModelNumber = ""
+    public private(set) var manufacturerName: GATTManufacturerNameString = ""
     
     internal let serviceHandle: UInt16
     
     internal let modelNumberHandle: UInt16
+    internal let manufacturerNameHandle: UInt16
     
     internal var timer: Timer!
     
@@ -48,6 +50,12 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
                                 value: modelNumber.data,
                                 permissions: [.read],
                                 properties: [.read],
+                                descriptors: descriptors),
+            
+            GATT.Characteristic(uuid: type(of: manufacturerName).uuid,
+                                value: manufacturerName.data,
+                                permissions: [.read],
+                                properties: [.read],
                                 descriptors: descriptors)
         ]
         
@@ -57,8 +65,9 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
         
         self.serviceHandle = try peripheral.add(service: service)
         self.modelNumberHandle = peripheral.characteristics(for: type(of: modelNumber).uuid)[0]
+        self.manufacturerNameHandle = peripheral.characteristics(for: type(of: manufacturerName).uuid)[0]
         
-        updateValue()
+        updateValues()
     }
     
     deinit {
@@ -70,10 +79,12 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
     
     // MARK: - Methods
     
-    func updateValue() {
+    func updateValues() {
         
-        self.modelNumber = "MacBookPro14.3"
+        modelNumber = "MacBookPro14.3"
+        manufacturerName = "MacBookProcito"
         
         peripheral[characteristic: modelNumberHandle] = modelNumber.data
+        peripheral[characteristic: manufacturerNameHandle] = manufacturerName.data
     }
 }
