@@ -18,16 +18,20 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
     public let peripheral: PeripheralManager
     
     public private(set) var modelNumber: GATTModelNumber = ""
+    public private(set) var serialNumber: GATTSerialNumberString = ""
     public private(set) var manufacturerName: GATTManufacturerNameString = ""
     public private(set) var firmwareRevision: GATTFirmwareRevisionString = ""
     public private(set) var softwareRevision: GATTSoftwareRevisionString = ""
+    public private(set) var hardwareRevision: GATTHardwareRevisionString = ""
     
     internal let serviceHandle: UInt16
     
     internal let modelNumberHandle: UInt16
+    internal let serialNumberHandle: UInt16
     internal let manufacturerNameHandle: UInt16
     internal let firmwareRevisionHandle: UInt16
     internal let softwareRevisionHandle: UInt16
+    internal let hardwareRevisionHandle: UInt16
     
     internal var timer: Timer!
     
@@ -56,6 +60,12 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
                                 properties: [.read],
                                 descriptors: descriptors),
             
+            GATT.Characteristic(uuid: type(of: serialNumber).uuid,
+                                value: serialNumber.data,
+                                permissions: [.read],
+                                properties: [.read],
+                                descriptors: descriptors),
+            
             GATT.Characteristic(uuid: type(of: manufacturerName).uuid,
                                 value: manufacturerName.data,
                                 permissions: [.read],
@@ -72,6 +82,12 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
                                 value: softwareRevision.data,
                                 permissions: [.read],
                                 properties: [.read],
+                                descriptors: descriptors),
+            
+            GATT.Characteristic(uuid: type(of: hardwareRevision).uuid,
+                                value: hardwareRevision.data,
+                                permissions: [.read],
+                                properties: [.read],
                                 descriptors: descriptors)
         ]
         
@@ -81,9 +97,11 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
         
         self.serviceHandle = try peripheral.add(service: service)
         self.modelNumberHandle = peripheral.characteristics(for: type(of: modelNumber).uuid)[0]
+        self.serialNumberHandle = peripheral.characteristics(for: type(of: serialNumber).uuid)[0]
         self.manufacturerNameHandle = peripheral.characteristics(for: type(of: manufacturerName).uuid)[0]
         self.firmwareRevisionHandle = peripheral.characteristics(for: type(of: firmwareRevision).uuid)[0]
         self.softwareRevisionHandle = peripheral.characteristics(for: type(of: softwareRevision).uuid)[0]
+        self.hardwareRevisionHandle = peripheral.characteristics(for: type(of: hardwareRevision).uuid)[0]
         
         updateValues()
     }
@@ -100,13 +118,17 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
     func updateValues() {
         
         modelNumber = "MacBookPro14.3"
+        serialNumber = "Serial number"
         manufacturerName = "MacBookProcito"
         firmwareRevision = "Firmware revision string"
         softwareRevision = "Software revision string"
+        hardwareRevision = "Hardware revision string"
         
         peripheral[characteristic: modelNumberHandle] = modelNumber.data
+        peripheral[characteristic: serialNumberHandle] = serialNumber.data
         peripheral[characteristic: manufacturerNameHandle] = manufacturerName.data
         peripheral[characteristic: firmwareRevisionHandle] = firmwareRevision.data
         peripheral[characteristic: softwareRevisionHandle] = softwareRevision.data
+        peripheral[characteristic: hardwareRevisionHandle] = hardwareRevision.data
     }
 }
