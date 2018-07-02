@@ -19,11 +19,13 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
     
     public private(set) var modelNumber: GATTModelNumber = ""
     public private(set) var manufacturerName: GATTManufacturerNameString = ""
+    public private(set) var firmwareRevision: GATTFirmwareRevisionString = ""
     
     internal let serviceHandle: UInt16
     
     internal let modelNumberHandle: UInt16
     internal let manufacturerNameHandle: UInt16
+    internal let firmwareRevisionHandle: UInt16
     
     internal var timer: Timer!
     
@@ -56,6 +58,12 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
                                 value: manufacturerName.data,
                                 permissions: [.read],
                                 properties: [.read],
+                                descriptors: descriptors),
+            
+            GATT.Characteristic(uuid: type(of: firmwareRevision).uuid,
+                                value: firmwareRevision.data,
+                                permissions: [.read],
+                                properties: [.read],
                                 descriptors: descriptors)
         ]
         
@@ -66,6 +74,7 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
         self.serviceHandle = try peripheral.add(service: service)
         self.modelNumberHandle = peripheral.characteristics(for: type(of: modelNumber).uuid)[0]
         self.manufacturerNameHandle = peripheral.characteristics(for: type(of: manufacturerName).uuid)[0]
+        self.firmwareRevisionHandle = peripheral.characteristics(for: type(of: firmwareRevision).uuid)[0]
         
         updateValues()
     }
@@ -83,8 +92,10 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
         
         modelNumber = "MacBookPro14.3"
         manufacturerName = "MacBookProcito"
+        firmwareRevision = "Firmware revision string"
         
         peripheral[characteristic: modelNumberHandle] = modelNumber.data
         peripheral[characteristic: manufacturerNameHandle] = manufacturerName.data
+        peripheral[characteristic: firmwareRevisionHandle] = firmwareRevision.data
     }
 }
