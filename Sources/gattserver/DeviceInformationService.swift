@@ -23,6 +23,7 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
     public private(set) var firmwareRevision: GATTFirmwareRevisionString = ""
     public private(set) var softwareRevision: GATTSoftwareRevisionString = ""
     public private(set) var hardwareRevision: GATTHardwareRevisionString = ""
+    public private(set) var pnpId = GATTPnPID(vendorIdSource: .fromAssignedNumbersDocument, vendorId: 0, productId: 0, productVersion: 0)
     
     internal let serviceHandle: UInt16
     
@@ -32,6 +33,7 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
     internal let firmwareRevisionHandle: UInt16
     internal let softwareRevisionHandle: UInt16
     internal let hardwareRevisionHandle: UInt16
+    internal let pnpIdHandle: UInt16
     
     internal var timer: Timer!
     
@@ -88,6 +90,12 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
                                 value: hardwareRevision.data,
                                 permissions: [.read],
                                 properties: [.read],
+                                descriptors: descriptors),
+            
+            GATT.Characteristic(uuid: type(of: pnpId).uuid,
+                                value: pnpId.data,
+                                permissions: [.read],
+                                properties: [.read],
                                 descriptors: descriptors)
         ]
         
@@ -102,6 +110,7 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
         self.firmwareRevisionHandle = peripheral.characteristics(for: type(of: firmwareRevision).uuid)[0]
         self.softwareRevisionHandle = peripheral.characteristics(for: type(of: softwareRevision).uuid)[0]
         self.hardwareRevisionHandle = peripheral.characteristics(for: type(of: hardwareRevision).uuid)[0]
+        self.pnpIdHandle = peripheral.characteristics(for: type(of: pnpId).uuid)[0]
         
         updateValues()
     }
@@ -123,6 +132,7 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
         firmwareRevision = "Firmware revision string"
         softwareRevision = "Software revision string"
         hardwareRevision = "Hardware revision string"
+        pnpId = GATTPnPID(vendorIdSource: .fromAssignedNumbersDocument, vendorId: 0, productId: 0, productVersion: 0)
         
         peripheral[characteristic: modelNumberHandle] = modelNumber.data
         peripheral[characteristic: serialNumberHandle] = serialNumber.data
@@ -130,5 +140,6 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
         peripheral[characteristic: firmwareRevisionHandle] = firmwareRevision.data
         peripheral[characteristic: softwareRevisionHandle] = softwareRevision.data
         peripheral[characteristic: hardwareRevisionHandle] = hardwareRevision.data
+        peripheral[characteristic: pnpIdHandle] = pnpId.data
     }
 }
