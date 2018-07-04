@@ -46,6 +46,24 @@ public final class UIDevice {
         #endif
     }
     
+    public var serialNumber: String {
+        
+        #if os(macOS)
+            return Mac.serialNumber ?? ""
+        #else
+            return ""
+        #endif
+    }
+    
+    public var modelIdentifier: String {
+        
+        #if os(macOS)
+            return Mac.modelIdentifier ?? ""
+        #else
+            return ""
+        #endif
+    }
+    
     /// The name of the operating system running on the device represented by the receiver.
     public var systemName: String {
         
@@ -230,6 +248,20 @@ public enum UIDeviceBatteryState: Int {
                 return SCDynamicStoreCopyComputerName(nil, nil) as String? ?? ""
             }
             
+            static var modelIdentifier: String? {
+                let service = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"))
+                
+                var identifier: String?
+                
+                if let modelData = IORegistryEntryCreateCFProperty(service, "model" as CFString, kCFAllocatorDefault, 0).takeRetainedValue() as? Data {
+                    
+                    identifier = String(data: modelData, encoding: .utf8)
+                }
+                
+                IOObjectRelease(service)
+                return identifier
+            }
+            
             /// Get the model name on a Macintosh.
             static var model: String {
                 
@@ -260,6 +292,24 @@ public enum UIDeviceBatteryState: Int {
                 }
                 
                 return []
+            }
+            
+            static var serialNumber: String? {
+                
+                let platformExpert = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"))
+                
+                guard platformExpert > 0
+                     else { return nil }
+                
+                guard let registryEntry = IORegistryEntryCreateCFProperty(platformExpert, kIOPlatformSerialNumberKey as CFString,
+                                                                          kCFAllocatorDefault, 0).takeUnretainedValue() as? String
+                    else { return nil }
+                
+                let serialNumber = registryEntry.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                
+                IOObjectRelease(platformExpert)
+                
+                return serialNumber
             }
             
             static var batteryState: UIDeviceBatteryState {

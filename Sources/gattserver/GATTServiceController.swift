@@ -20,5 +20,6 @@ public protocol GATTServiceController: class {
 }
 
 internal let serviceControllers: [GATTServiceController.Type] = [
-    GATTBatteryServiceController.self
+    GATTBatteryServiceController.self,
+    GATTDeviceInformationServiceController.self
 ]
