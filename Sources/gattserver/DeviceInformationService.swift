@@ -135,12 +135,12 @@ public final class GATTDeviceInformationServiceController: GATTServiceController
     
     func updateValues() {
         
-        modelNumber = "MacBookPro14.3"
-        serialNumber = "Serial number"
-        manufacturerName = "MacBookProcito"
-        firmwareRevision = "Firmware revision string"
-        softwareRevision = "Software revision string"
-        hardwareRevision = "Hardware revision string"
+        modelNumber = GATTModelNumber(rawValue: UIDevice.current.modelIdentifier)
+        serialNumber = GATTSerialNumberString(rawValue: UIDevice.current.serialNumber)
+        manufacturerName = "Apple Inc."
+        firmwareRevision = ""
+        softwareRevision = ""
+        hardwareRevision = ""
         pnpId = GATTPnPID(vendorIdSource: .fromAssignedNumbersDocument, vendorId: 0, productId: 0, productVersion: 0)
         systemId = GATTSystemID(manufacturerIdentifier: 101, organizationallyUniqueIdentifier: 340)
         
