@@ -6,24 +6,37 @@
 //
 
 import Foundation
-import CoreLocation
 
-public protocol LocationManagerProtocol: class {
+/// Location Manager protocol
+public protocol LocationManager: class {
     
-    var didUpdateLocation: ((Double, Double) -> Void)? { get set }
+    /// Location was updated.
+    var didUpdate: ((Location) -> ())? { get set }
     
-    var locationServicesEnabled: Bool { get }
+    /// Start updating location.
+    func start() throws
     
-    func startUpdatingLocation()
+    /// Stop updating location.
+    func stop()
     
-    func stopUpdatingLocation()
+    /// Whether the location is updating.
+    var isUpdating: Bool
+    
+    /// 
+    var location: Location?
 }
 
-extension LocationManagerProtocol {
+/// Location
+public struct Location {
     
-    public var didUpdateLocation: ((Double, Double) -> Void)?  {
-        get { return nil }
-        set { }
+    public var latitude: Double
+    
+    public var longitude: Double
+    
+    public init(latitude: Double,
+                longitude: Double) {
+        
+        self.latitude = latitude
+        self.longitude = longitude
     }
-    
 }

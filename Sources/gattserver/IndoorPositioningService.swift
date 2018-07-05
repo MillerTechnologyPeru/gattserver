@@ -33,11 +33,7 @@ public final class GATTIndoorPositioningnServiceController: GATTServiceControlle
         
         self.locationManager = LocationManager()
         
-        #if os(macOS)
-        let serviceUUID = BluetoothUUID()
-        #else
         let serviceUUID = type(of: self).service
-        #endif
         
         #if os(Linux)
         let descriptors = [GATTClientCharacteristicConfiguration().descriptor]
@@ -49,7 +45,7 @@ public final class GATTIndoorPositioningnServiceController: GATTServiceControlle
             GATT.Characteristic(uuid: type(of: latitude).uuid,
                                 value: latitude.data,
                                 permissions: [.read],
-                                properties: [.read],
+                                properties: [.read, .notify],
                                 descriptors: descriptors)
         ]
         
