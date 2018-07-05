@@ -9,8 +9,6 @@ import Foundation
 
 #if os(Linux)
 
-public typealias LocationManager = LinuxLocation
-
 public final class LinuxLocation: LocationManagerProtocol {
     
     public var locationServicesEnabled: Bool {

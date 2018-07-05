@@ -13,28 +13,49 @@ public protocol LocationManager: class {
     /// Location was updated.
     var didUpdate: ((Location) -> ())? { get set }
     
-    /// Start updating location.
-    func start() throws
-    
-    /// Stop updating location.
-    func stop()
-    
-    /// Whether the location is updating.
-    var isUpdating: Bool
-    
-    /// 
-    var location: Location?
+    /// Last reported location.
+    var location: Location? { get }
 }
 
-/// Location
 public struct Location {
     
-    public var latitude: Double
+    public var coordinate: Coordinate
     
-    public var longitude: Double
+    public init(coordinate: Coordinate) {
+        
+        self.coordinate = coordinate
+    }
+}
+
+public extension Location {
     
-    public init(latitude: Double,
-                longitude: Double) {
+    public typealias Coordinate = LocationCoordinate
+}
+
+/*
+ *  LocationCoordinate
+ *
+ *  Discussion:
+ *    A structure that contains a geographical coordinate.
+ *
+ *  Fields:
+ *    latitude:
+ *      The latitude in degrees.
+ *    longitude:
+ *      The longitude in degrees.
+ */
+public struct LocationCoordinate {
+    
+    public typealias Degrees = Double
+    
+    /// The latitude in degrees.
+    public var latitude: Degrees
+    
+    /// The longitude in degrees.
+    public var longitude: Degrees
+    
+    public init(latitude: Degrees,
+                longitude: Degrees) {
         
         self.latitude = latitude
         self.longitude = longitude

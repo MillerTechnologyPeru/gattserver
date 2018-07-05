@@ -17,7 +17,10 @@ public final class GATTIndoorPositioningnServiceController: GATTServiceControlle
     
     public let peripheral: PeripheralManager
     
-    public private(set) var latitude: GATTLatitude = 0
+    public private(set) var latitude: GATTLatitude = 0 {
+        
+        didSet { peripheral[characteristic: latitudeHandle] = latitude.data }
+    }
     
     internal let serviceHandle: UInt16
     
@@ -30,8 +33,6 @@ public final class GATTIndoorPositioningnServiceController: GATTServiceControlle
     public init(peripheral: PeripheralManager) throws {
         
         self.peripheral = peripheral
-        
-        self.locationManager = LocationManager()
         
         let serviceUUID = type(of: self).service
         
@@ -56,14 +57,12 @@ public final class GATTIndoorPositioningnServiceController: GATTServiceControlle
         self.serviceHandle = try peripheral.add(service: service)
         self.latitudeHandle = peripheral.characteristics(for: type(of: latitude).uuid)[0]
         
-        locationManager.didUpdateLocation = { latitude, longitude in
-            print("latitude", latitude)
-            print("longitude", longitude)
-        }
-        
-        locationManager.startUpdatingLocation()
-        
-        updateValues()
+        // start updating location
+        #if os(macOS)
+        self.locationManager = try DarwinLocationManager()
+        self.locationManager.didUpdate = { [weak self] in self?.updateValues($0) }
+        #elseif os(Linux)
+        #endif
     }
     
     deinit {
@@ -73,12 +72,8 @@ public final class GATTIndoorPositioningnServiceController: GATTServiceControlle
     
     // MARK: - Methods
     
-    func updateValues() {
+    private func updateValues(_ location: Location) {
         
-        latitude = GATTLatitude(rawValue: 123)
-        
-        peripheral[characteristic: latitudeHandle] = latitude.data
-        
-//        UIDevice.current.
+        self.latitude = GATTLatitude(rawValue: Int32(location.coordinate.latitude))
     }
 }
