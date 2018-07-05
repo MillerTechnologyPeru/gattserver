@@ -111,7 +111,7 @@ extension DarwinLocationManager.InternalDelegate: CLLocationManagerDelegate {
         guard let location = locations.last
             else { assertionFailure("Array always contains at least one object representing the current location."); return }
         
-        self.locationManager?.accessQueue.async { [weak self] in
+        self.locationManager?.accessQueue.async(flags: .barrier) { [weak self] in
             self?.locationManager?.location = Location(location)
         }
     }
