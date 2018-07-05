@@ -22,6 +22,13 @@ func run(arguments: [String] = CommandLine.arguments) throws {
     //  first argument is always the current directory
     let arguments = Array(arguments.dropFirst())
     
+    guard let serviceUUIDString = arguments.first
+        else { throw CommandError.noCommand }
+    
+    guard let service = BluetoothUUID(rawValue: serviceUUIDString),
+        let controllerType = serviceControllers.first(where: { $0.service == service })
+        else { throw CommandError.invalidCommandType(serviceUUIDString) }
+    
     #if os(Linux)
     guard let controller = HostController.default
         else { throw CommandError.bluetoothUnavailible }
@@ -44,13 +51,6 @@ func run(arguments: [String] = CommandLine.arguments) throws {
     #if os(macOS)
     while peripheral.state != .poweredOn { sleep(1) }
     #endif
-    
-    guard let serviceUUIDString = arguments.first
-        else { throw CommandError.noCommand }
-    
-    guard let service = BluetoothUUID(rawValue: serviceUUIDString),
-        let controllerType = serviceControllers.first(where: { $0.service == service })
-        else { throw CommandError.invalidCommandType(serviceUUIDString) }
     
     serviceController = try controllerType.init(peripheral: peripheral)
     
